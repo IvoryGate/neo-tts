@@ -19,6 +19,8 @@ frontend/node_modules/.vite/
 logs/
 /onnx
 /pretrained_models
+# Bundled voice checkpoints from portable/local (neuro2, etc.)
+/models/
 /onnx_export/
 /frontend/node_modules/
 desktop/node_modules/
