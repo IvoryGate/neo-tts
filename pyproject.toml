@@ -78,6 +78,7 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=8,<9",
+    "ruff>=0.9",
 ]
 
 [[tool.uv.index]]
@@ -95,3 +96,27 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["GPT_SoVITS"]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests", "tests"]
+pythonpath = ["."]
+markers = [
+    "e2e: GPU/weights-heavy flows; set GPT_SOVITS_E2E=1 (see backend/tests/conftest.py).",
+]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 120
+exclude = ["GPT_SoVITS", ".venv", "frontend/node_modules", "desktop/node_modules"]
+
+[tool.ruff.lint]
+# Baseline: pyflakes + pycodestyle errors. Add isort (I) after one-time `ruff check --select I --fix`.
+select = ["E", "F"]
+ignore = ["E501"]
+
+[tool.ruff.lint.per-file-ignores]
+"backend/app/inference/pytorch_optimized.py" = ["E402"]
+"backend/tests/conftest.py" = ["E402"]
+
+[tool.ruff.format]
+quote-style = "double"
