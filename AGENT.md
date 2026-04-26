@@ -6,6 +6,13 @@ This file orients autonomous coding agents. **Do not treat it as a second README
 
 Safely understand, stabilize, and evolve the repo into a production-grade system **without breaking existing behavior**. Prefer minimal diffs, tests first for refactors, and documented constraints under `system/constraints/`.
 
+## Git workflow (mandatory)
+
+- **`main` is always stable** — Never commit directly to `main`. Do all work on a short-lived branch: `feat/<short-desc>`, `fix/<short-desc>`, or `refactor/<short-desc>`.
+- **Change flow** — Branch → implement → tests → local checks (same as Verify below) → push → open PR → **CI green** → merge → delete branch.
+- **Commits** — Small and atomic; use Conventional Commits: `type(scope): description` (e.g. `fix(export): reject targets outside export root`).
+- **Merge rule** — Merge only when tests, lint, and CI pass. If something breaks `main`, fix in a new `fix/...` branch with a regression test.
+
 ## Phases (loop)
 
 1. **Observe** — Read the modules and tests that define the behavior you will touch.
