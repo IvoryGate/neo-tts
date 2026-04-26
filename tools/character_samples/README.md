@@ -26,6 +26,18 @@ uv run python tools/character_samples/generate_from_podcast_characters.py `
 
 Optional: `--run-id my-run-1`, `--backend http://127.0.0.1:18600`, `--skip backups trash`.
 
+## Long-form stability test
+
+Uses one character folder’s reference with **`longform_sample.txt`** (or any `--text-file`) and writes a single WAV (long HTTP timeout).
+
+```powershell
+uv run python tools/character_samples/synthesize_longform.py `
+  --character-dir "H:\AI-Podcast-Generator\data\charactor\candidate_9" `
+  --output localdev/longform/candidate9-long-stability.wav
+```
+
+Default synthesis copy lives in `longform_sample.txt` beside this README.
+
 ## Reference text normalization
 
 For `ref_lang=en`, if most letters in `reference.txt` are uppercase (typical LJ Speech dumps), the script lowercases and applies **sentence case** (first letter only), then ensures a closing `.` if missing. This avoids GPT-SoVITS treating ALL CAPS as letter-by-letter spelling. Use `--no-normalize-ref` to send the file verbatim.
