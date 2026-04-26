@@ -1,7 +1,6 @@
 import pathlib
 import importlib
 import sys
-from types import SimpleNamespace
 from types import ModuleType
 
 from backend.app.inference.model_cache import PyTorchModelCache

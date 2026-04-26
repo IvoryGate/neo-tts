@@ -2,7 +2,6 @@ import sys
 from types import ModuleType
 
 import pytest
-import torch
 
 from backend.app.inference.text_processing import (
     build_phones_and_bert_features,

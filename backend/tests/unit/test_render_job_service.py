@@ -1,10 +1,8 @@
 import threading
 import shutil
 import time
-from types import SimpleNamespace
 
 import numpy as np
-import pytest
 import torch
 
 from backend.app.schemas.edit_session import AppendSegmentsRequest, CheckpointState

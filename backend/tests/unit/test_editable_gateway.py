@@ -1,7 +1,6 @@
 from types import SimpleNamespace
 
 import numpy as np
-import pytest
 import torch
 
 from backend.app.inference.editable_gateway import (

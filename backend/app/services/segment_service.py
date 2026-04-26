@@ -12,8 +12,6 @@ from backend.app.schemas.edit_session import (
 )
 from backend.app.services.edge_service import EdgeService
 from backend.app.text.segment_standardizer import (
-    LONG_EDIT_COST_RISK,
-    SHORT_NATURALNESS_RISK,
     build_segment_display_text,
     extract_segment_stem,
     standardize_segment_text,
