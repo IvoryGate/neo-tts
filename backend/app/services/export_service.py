@@ -175,7 +175,11 @@ class ExportService:
         if snapshot.timeline_manifest_id is None:
             raise EditSessionNotFoundError("Timeline manifest not found for requested document version.")
 
-        resolved_target_dir = str(self._asset_store.resolve_export_target_dir(target_dir))
+        resolved_path = self._asset_store.resolve_export_target_dir(target_dir)
+        export_cap = self._asset_store.export_root.resolve()
+        if not resolved_path.is_relative_to(export_cap):
+            raise ValueError("Export target_dir must be located under the configured edit-session export root.")
+        resolved_target_dir = str(resolved_path)
         now = datetime.now(timezone.utc)
         job = ExportJobResponse(
             export_job_id=uuid4().hex,

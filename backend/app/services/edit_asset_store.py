@@ -58,6 +58,10 @@ class EditAssetStore:
         self._formal_root.mkdir(parents=True, exist_ok=True)
         self._export_root.mkdir(parents=True, exist_ok=True)
 
+    @property
+    def export_root(self) -> Path:
+        return self._export_root
+
     def segment_asset_path(self, render_asset_id: str) -> Path:
         return self._formal_root / "segments" / self._validate_leaf_name(render_asset_id)
 
