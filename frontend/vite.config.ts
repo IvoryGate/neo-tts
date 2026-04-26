@@ -15,6 +15,10 @@ export default defineConfig(({ mode }) => {
   return {
     // Electron 打包后通过 file:// 加载 index.html，生产产物必须使用相对资源路径。
     base: isProductionBuild ? "./" : "/",
+    test: {
+      environment: "node",
+      include: ["src/**/*.test.ts"],
+    },
     plugins: [vue(), ui({ colorMode: false }), tailwindcss()],
     resolve: {
       alias: { "@": resolve(__dirname, "src") },
