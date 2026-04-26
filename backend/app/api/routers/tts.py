@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 import queue
 import time
+from typing import TYPE_CHECKING
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
@@ -35,6 +36,9 @@ from backend.app.services.inference_runtime import InferenceRuntimeController
 from backend.app.services.synthesis_result_store import SynthesisResultStore
 from backend.app.services.tts_service import TtsService
 from backend.app.services.voice_service import VoiceService
+
+if TYPE_CHECKING:
+    from backend.app.inference.engine import PyTorchInferenceEngine
 
 
 router = APIRouter(prefix="/v1/audio", tags=["tts"])
