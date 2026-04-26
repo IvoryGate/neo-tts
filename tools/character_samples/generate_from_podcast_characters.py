@@ -11,6 +11,45 @@ from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
 
 
+def _uppercase_letter_ratio(text: str) -> float:
+    letters = [c for c in text if c.isalpha()]
+    if not letters:
+        return 0.0
+    return sum(1 for c in letters if c.isupper()) / len(letters)
+
+
+def _sentence_case_first_char(text: str) -> str:
+    for i, ch in enumerate(text):
+        if ch.isalpha():
+            return text[:i] + ch.upper() + text[i + 1 :].lower()
+    return text.lower()
+
+
+def _ensure_terminal_punctuation(text: str) -> str:
+    if not text:
+        return text
+    if text[-1] in ".?!…":
+        return text
+    return text + "."
+
+
+def normalize_reference_text(raw: str, *, ref_lang: str, uppercase_threshold: float = 0.72) -> str:
+    """Make reference text TTS-friendly: ALL-CAPS LJ-style lines -> sentence case + closing punctuation.
+
+    GPT-SoVITS-style G2P often treats heavy ALL CAPS as letter-by-letter spelling prompts.
+    """
+    text = " ".join(raw.split())
+    if not text:
+        return text
+    lang = ref_lang.lower().split("-", 1)[0]
+    if lang == "en":
+        if _uppercase_letter_ratio(text) >= uppercase_threshold:
+            text = text.lower()
+            text = _sentence_case_first_char(text)
+        text = _ensure_terminal_punctuation(text)
+    return text
+
+
 def find_reference_audio(directory: Path) -> Path | None:
     wavs = sorted(directory.glob("*.wav"))
     if wavs:
@@ -51,6 +90,17 @@ def main() -> int:
         default=["backups"],
         help="Child directory names to skip.",
     )
+    parser.add_argument(
+        "--no-normalize-ref",
+        action="store_true",
+        help="Send reference.txt verbatim (not recommended for ALL CAPS LJ dumps).",
+    )
+    parser.add_argument(
+        "--uppercase-threshold",
+        type=float,
+        default=0.72,
+        help="If this fraction of letters are uppercase (en), normalize to sentence case.",
+    )
     args = parser.parse_args()
 
     source = args.source.resolve()
@@ -83,6 +133,12 @@ def main() -> int:
         if not ref_text:
             print(f"skip {child.name}: empty reference.txt", file=sys.stderr)
             continue
+        if not args.no_normalize_ref:
+            ref_text = normalize_reference_text(
+                ref_text,
+                ref_lang=args.ref_lang,
+                uppercase_threshold=args.uppercase_threshold,
+            )
 
         payload = {
             "input": args.text,

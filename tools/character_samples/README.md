@@ -26,6 +26,10 @@ uv run python tools/character_samples/generate_from_podcast_characters.py `
 
 Optional: `--run-id my-run-1`, `--backend http://127.0.0.1:18600`, `--skip backups trash`.
 
+## Reference text normalization
+
+For `ref_lang=en`, if most letters in `reference.txt` are uppercase (typical LJ Speech dumps), the script lowercases and applies **sentence case** (first letter only), then ensures a closing `.` if missing. This avoids GPT-SoVITS treating ALL CAPS as letter-by-letter spelling. Use `--no-normalize-ref` to send the file verbatim.
+
 ## Skipped directories
 
 By default the directory name `backups` is skipped. Empty folders or folders without `reference.txt` or without `.wav`/`.flac` are skipped with a message on stderr.
