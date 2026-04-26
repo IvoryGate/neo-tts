@@ -10,6 +10,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+# fast_langdetect refuses to auto-create a user-configured cache dir; tests expect split-lang detection to run.
+(Path(PROJECT_ROOT) / "pretrained_models" / "fast_langdetect").mkdir(parents=True, exist_ok=True)
+
 from backend.app.core.settings import AppSettings, get_settings
 from backend.app.repositories.voice_repository import VoiceRepository
 from backend.app.services.voice_service import VoiceService

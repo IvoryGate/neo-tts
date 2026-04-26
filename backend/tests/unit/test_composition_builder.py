@@ -4,12 +4,12 @@ from backend.app.inference.editable_types import (
     BlockCompositionAssetPayload,
     BoundaryAssetPayload,
     RenderBlock,
-    DocumentCompositionManifestPayload,
     SegmentRenderAssetPayload,
 )
 from backend.app.schemas.edit_session import EditableEdge
 from backend.app.services.block_planner import BlockPlanner
 from backend.app.services.composition_builder import CompositionBuilder
+from backend.tests.segment_factory import zh_sentence_segment
 
 
 def _segment_asset(
@@ -148,16 +148,11 @@ def test_block_planner_splits_once_block_reaches_min_duration_window():
     planner = BlockPlanner(sample_rate=10, min_block_seconds=20, max_block_seconds=40, max_segment_count=50)
     segments = []
     for index in range(1, 4):
-        from backend.app.schemas.edit_session import EditableSegment
-
         segments.append(
-            EditableSegment(
+            zh_sentence_segment(
                 segment_id=f"seg-{index}",
-                document_id="doc-1",
                 order_key=index,
-                raw_text=f"第{index}句。",
-                normalized_text=f"第{index}句。",
-                text_language="zh",
+                sentence=f"第{index}句。",
                 assembled_audio_span=(0, 120),
             )
         )

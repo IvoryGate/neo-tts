@@ -7,12 +7,12 @@ from backend.app.schemas.edit_session import (
     ActiveDocumentState,
     CheckpointState,
     DocumentSnapshot,
-    EditableSegment,
     RenderJobRecord,
 )
 from backend.app.services.edit_asset_store import EditAssetStore
 from backend.app.services.edit_session_maintenance_service import EditSessionMaintenanceService
 from backend.app.services.edit_session_runtime import EditSessionRuntime
+from backend.tests.segment_factory import zh_sentence_segment
 
 
 def _build_repository(tmp_path: Path) -> EditSessionRepository:
@@ -39,16 +39,11 @@ def test_service_recovers_head_snapshot_after_restart(tmp_path: Path):
         document_id="doc-1",
         snapshot_kind="head",
         document_version=2,
-        raw_text="你好。",
-        normalized_text="你好。",
         segments=[
-            EditableSegment(
+            zh_sentence_segment(
                 segment_id="seg-1",
-                document_id="doc-1",
                 order_key=1,
-                raw_text="你好。",
-                normalized_text="你好。",
-                text_language="zh",
+                sentence="你好。",
                 render_asset_id="render-1",
             )
         ],

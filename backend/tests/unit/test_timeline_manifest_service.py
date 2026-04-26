@@ -8,12 +8,9 @@ from backend.app.inference.editable_types import (
     EdgeCompositionEntry,
     SegmentCompositionEntry,
 )
-from backend.app.schemas.edit_session import (
-    DocumentSnapshot,
-    EditableEdge,
-    EditableSegment,
-)
+from backend.app.schemas.edit_session import DocumentSnapshot, EditableEdge
 from backend.app.services.timeline_manifest_service import TimelineManifestService
+from backend.tests.segment_factory import zh_sentence_segment
 
 
 def test_build_timeline_manifest_reflows_absolute_spans_and_playback_map():
@@ -23,34 +20,23 @@ def test_build_timeline_manifest_reflows_absolute_spans_and_playback_map():
         document_id="doc-1",
         snapshot_kind="head",
         document_version=3,
-        raw_text="甲。乙。丙。",
-        normalized_text="甲。乙。丙。",
         segments=[
-            EditableSegment(
+            zh_sentence_segment(
                 segment_id="seg-1",
-                document_id="doc-1",
                 order_key=1,
-                raw_text="甲。",
-                normalized_text="甲。",
-                text_language="zh",
+                sentence="甲。",
                 render_asset_id="render-1",
             ),
-            EditableSegment(
+            zh_sentence_segment(
                 segment_id="seg-2",
-                document_id="doc-1",
                 order_key=2,
-                raw_text="乙。",
-                normalized_text="乙。",
-                text_language="zh",
+                sentence="乙。",
                 render_asset_id="render-2",
             ),
-            EditableSegment(
+            zh_sentence_segment(
                 segment_id="seg-3",
-                document_id="doc-1",
                 order_key=3,
-                raw_text="丙。",
-                normalized_text="丙。",
-                text_language="zh",
+                sentence="丙。",
                 render_asset_id="render-3",
             ),
         ],

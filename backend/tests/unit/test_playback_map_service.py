@@ -1,6 +1,6 @@
 from backend.app.inference.editable_types import DocumentCompositionManifestPayload, SegmentCompositionEntry
-from backend.app.schemas.edit_session import EditableSegment
 from backend.app.services.playback_map_service import PlaybackMapService
+from backend.tests.segment_factory import zh_sentence_segment
 
 
 def test_rebuild_playback_map_uses_manifest_spans_and_segment_order():
@@ -21,22 +21,8 @@ def test_rebuild_playback_map_uses_manifest_spans_and_segment_order():
         audio=None,
     )
     segments = [
-        EditableSegment(
-            segment_id="seg-2",
-            document_id="doc-1",
-            order_key=2,
-            raw_text="第二句。",
-            normalized_text="第二句。",
-            text_language="zh",
-        ),
-        EditableSegment(
-            segment_id="seg-1",
-            document_id="doc-1",
-            order_key=1,
-            raw_text="第一句。",
-            normalized_text="第一句。",
-            text_language="zh",
-        ),
+        zh_sentence_segment(segment_id="seg-2", order_key=2, sentence="第二句。"),
+        zh_sentence_segment(segment_id="seg-1", order_key=1, sentence="第一句。"),
     ]
 
     playback_map = service.rebuild(manifest=manifest, segments=segments)

@@ -1,18 +1,16 @@
 from backend.app.schemas.edit_session import DocumentSnapshot, EditableEdge, EditableSegment
 from backend.app.services.block_planner import BlockPlanner
 from backend.app.services.render_planner import RenderPlanner
+from backend.tests.segment_factory import zh_sentence_segment
 
 
 def _segment(segment_id: str, order_key: int) -> EditableSegment:
-    return EditableSegment(
+    return zh_sentence_segment(
         segment_id=segment_id,
-        document_id="doc-1",
         order_key=order_key,
+        sentence=f"第{order_key}句。",
         previous_segment_id=f"seg-{order_key - 1}" if order_key > 1 else None,
         next_segment_id=f"seg-{order_key + 1}" if order_key < 3 else None,
-        raw_text=f"第{order_key}句。",
-        normalized_text=f"第{order_key}句。",
-        text_language="zh",
         render_version=1,
         render_asset_id=f"render-{segment_id}-v1",
         assembled_audio_span=(0, 10),
@@ -37,8 +35,6 @@ def _snapshot(*, segments: list[EditableSegment], edges: list[EditableEdge]) -> 
         document_id="doc-1",
         snapshot_kind="head",
         document_version=1,
-        raw_text="".join(segment.raw_text for segment in segments),
-        normalized_text="".join(segment.normalized_text for segment in segments),
         segments=segments,
         edges=edges,
     )
@@ -69,11 +65,16 @@ def test_for_segment_update_targets_changed_segment_neighbor_edges_and_blocks():
     planner = _planner()
     before_segments = [_segment("seg-1", 1), _segment("seg-2", 2), _segment("seg-3", 3)]
     after_segments = [segment.model_copy(deep=True) for segment in before_segments]
-    after_segments[1].raw_text = "第二句已修改。"
-    after_segments[1].normalized_text = "第二句已修改。"
-    after_segments[1].render_version = 2
-    after_segments[1].render_asset_id = None
-    after_segments[1].assembled_audio_span = None
+    after_segments[1] = after_segments[1].model_copy(
+        update={
+            "stem": "第二句已修改",
+            "terminal_raw": "。",
+            "terminal_source": "original",
+            "render_version": 2,
+            "render_asset_id": None,
+            "assembled_audio_span": None,
+        }
+    )
 
     plan = planner.for_segment_update(
         before_snapshot=_snapshot(segments=before_segments, edges=[_edge("seg-1", "seg-2"), _edge("seg-2", "seg-3")]),
@@ -141,15 +142,12 @@ def test_for_segment_insert_targets_new_segment_and_new_neighbor_edges():
     before_segments = [_segment("seg-1", 1), _segment("seg-3", 2)]
     after_segments = [
         before_segments[0].model_copy(update={"next_segment_id": "seg-2"}),
-        EditableSegment(
+        zh_sentence_segment(
             segment_id="seg-2",
-            document_id="doc-1",
             order_key=2,
+            sentence="插入句。",
             previous_segment_id="seg-1",
             next_segment_id="seg-3",
-            raw_text="插入句。",
-            normalized_text="插入句。",
-            text_language="zh",
             render_version=1,
             render_asset_id=None,
         ),

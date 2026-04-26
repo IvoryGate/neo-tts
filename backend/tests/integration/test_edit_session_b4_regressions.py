@@ -109,12 +109,12 @@ def test_composition_route_requires_completed_composition_export(test_app_settin
         assert composition_before_export.status_code == 404
 
         snapshot = client.get("/v1/edit-session/snapshot").json()
-        export_dir = test_app_settings.edit_session_exports_dir / "composition-ready"
+        export_dir = (test_app_settings.edit_session_exports_dir / "composition-ready").resolve()
         create_export = client.post(
             "/v1/edit-session/exports/composition",
             json={
                 "document_version": snapshot["document_version"],
-                "target_dir": "composition-ready",
+                "target_dir": str(export_dir),
                 "overwrite_policy": "fail",
             },
         )
@@ -125,7 +125,8 @@ def test_composition_route_requires_completed_composition_export(test_app_settin
         composition_after_export = client.get("/v1/edit-session/composition")
         assert composition_after_export.status_code == 200
         assert composition_after_export.json()["audio_delivery"]["audio_url"].endswith("/audio")
-        assert (export_dir / "composition.wav").exists()
+        exported_wavs = sorted(export_dir.glob("neo-tts-export-*.wav"))
+        assert len(exported_wavs) == 1
 
 
 def test_export_target_dir_must_stay_inside_controlled_export_root(test_app_settings):

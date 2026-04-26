@@ -8,6 +8,7 @@ from backend.app.schemas.edit_session import (
 )
 from backend.app.schemas.voice import VoiceDefaults, VoiceProfile
 from backend.app.services.render_config_resolver import RenderConfigResolver
+from backend.tests.segment_factory import zh_sentence_segment
 
 
 class _FakeVoiceService:
@@ -51,17 +52,13 @@ class _FakeVoiceService:
 
 def _segment(segment_id: str, order_key: int, **overrides) -> EditableSegment:
     payload = {
-        "segment_id": segment_id,
-        "document_id": "doc-1",
-        "order_key": order_key,
-        "raw_text": f"第{order_key}句。",
-        "normalized_text": f"第{order_key}句。",
-        "text_language": "zh",
+        "sentence": f"第{order_key}句。",
         "render_version": 1,
         "render_asset_id": f"render-{segment_id}",
     }
     payload.update(overrides)
-    return EditableSegment(**payload)
+    sentence = payload.pop("sentence")
+    return zh_sentence_segment(segment_id=segment_id, order_key=order_key, sentence=sentence, **payload)
 
 
 def _resolver() -> RenderConfigResolver:
@@ -74,8 +71,6 @@ def test_render_config_resolver_prefers_segment_then_group_then_session_scope_an
         document_id="doc-1",
         snapshot_kind="head",
         document_version=2,
-        raw_text="第一句。第二句。",
-        normalized_text="第一句。第二句。",
         segments=[
             _segment("seg-1", 1),
             _segment(
@@ -170,8 +165,6 @@ def test_render_config_resolver_unrelated_binding_override_does_not_change_curre
         document_id="doc-1",
         snapshot_kind="head",
         document_version=1,
-        raw_text="第一句。",
-        normalized_text="第一句。",
         segments=[_segment("seg-1", 1)],
         edges=[],
         groups=[],

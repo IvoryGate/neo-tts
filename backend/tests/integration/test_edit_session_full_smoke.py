@@ -21,8 +21,8 @@ def test_edit_session_full_smoke_covers_timeline_mutation_and_dual_exports(test_
     gate = threading.Event()
     app = create_app(settings=test_app_settings)
     app.state.editable_inference_gateway = EditableInferenceGateway(FakeEditableInferenceBackend(gate=gate))
-    segment_export_dir = test_app_settings.edit_session_exports_dir / "full-smoke-segments"
-    composition_export_dir = test_app_settings.edit_session_exports_dir / "full-smoke-composition"
+    segment_export_dir = (test_app_settings.edit_session_exports_dir / "full-smoke-segments").resolve()
+    composition_export_dir = (test_app_settings.edit_session_exports_dir / "full-smoke-composition").resolve()
 
     with TestClient(app) as client:
         gate.set()
@@ -69,7 +69,7 @@ def test_edit_session_full_smoke_covers_timeline_mutation_and_dual_exports(test_
             "/v1/edit-session/exports/segments",
             json={
                 "document_version": snapshot["document_version"],
-                "target_dir": "full-smoke-segments",
+                "target_dir": str(segment_export_dir),
                 "overwrite_policy": "fail",
             },
         )
@@ -83,7 +83,7 @@ def test_edit_session_full_smoke_covers_timeline_mutation_and_dual_exports(test_
             "/v1/edit-session/exports/composition",
             json={
                 "document_version": snapshot["document_version"],
-                "target_dir": "full-smoke-composition",
+                "target_dir": str(composition_export_dir),
                 "overwrite_policy": "fail",
             },
         )
@@ -104,7 +104,11 @@ def test_edit_session_full_smoke_covers_timeline_mutation_and_dual_exports(test_
         refreshed_snapshot = client.get("/v1/edit-session/snapshot").json()
         assert refreshed_snapshot["composition_manifest_id"] is not None
 
-    assert (segment_export_dir / "0001.wav").exists()
-    assert (segment_export_dir / "0002.wav").exists()
-    assert (segment_export_dir / "0003.wav").exists()
-    assert (composition_export_dir / "composition.wav").exists()
+    segment_bundle_dirs = sorted(segment_export_dir.glob("neo-tts-export-*"))
+    assert len(segment_bundle_dirs) == 1
+    bundle_dir = segment_bundle_dirs[0]
+    for index in range(1, 4):
+        assert (bundle_dir / f"segments-{index}.wav").exists()
+
+    composition_wavs = sorted(composition_export_dir.glob("neo-tts-export-*.wav"))
+    assert len(composition_wavs) == 1

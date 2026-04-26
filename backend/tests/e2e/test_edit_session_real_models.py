@@ -2,10 +2,13 @@ import io
 import time
 import wave
 
+import pytest
 from fastapi.testclient import TestClient
 
 from backend.app.main import create_app
 from backend.app.inference.editable_types import build_boundary_asset_id
+
+pytestmark = pytest.mark.e2e
 
 
 def _wait_for_terminal_job(client: TestClient, job_id: str, *, timeout: float = 300.0) -> dict:

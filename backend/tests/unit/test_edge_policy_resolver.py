@@ -6,18 +6,16 @@ from backend.app.schemas.edit_session import (
     VoiceBinding,
 )
 from backend.app.services.render_config_resolver import RenderConfigResolver
+from backend.tests.segment_factory import zh_sentence_segment
 
 
 def _segment(segment_id: str, order_key: int, voice_binding_id: str) -> EditableSegment:
-    return EditableSegment(
+    return zh_sentence_segment(
         segment_id=segment_id,
-        document_id="doc-1",
         order_key=order_key,
+        sentence=f"第{order_key}句。",
         previous_segment_id="seg-1" if order_key == 2 else None,
         next_segment_id="seg-2" if order_key == 1 else None,
-        raw_text=f"第{order_key}句。",
-        normalized_text=f"第{order_key}句。",
-        text_language="zh",
         render_version=1,
         render_asset_id=f"render-{segment_id}",
         voice_binding_id=voice_binding_id,
@@ -34,8 +32,6 @@ def _snapshot(voice_bindings: list[VoiceBinding]) -> DocumentSnapshot:
         document_id="doc-1",
         snapshot_kind="head",
         document_version=2,
-        raw_text="".join(segment.raw_text for segment in segments),
-        normalized_text="".join(segment.normalized_text for segment in segments),
         segments=segments,
         edges=[
             EditableEdge(

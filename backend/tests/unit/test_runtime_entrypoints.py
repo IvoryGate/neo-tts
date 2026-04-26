@@ -23,10 +23,12 @@ def test_frontend_dev_proxy_targets_env_or_launcher_port():
     assert source.count("target: backendOrigin") == 2
 
 
-def test_start_dev_launcher_mentions_launcher_or_18600():
-    source = Path("start_dev.bat").read_text(encoding="utf-8")
+def test_readme_documents_local_backend_port():
+    """Dev entry is documented in README (start_dev.bat is not shipped in-tree)."""
+    source = Path("README.md").read_text(encoding="utf-8")
 
     assert "18600" in source
+    assert "launcher-dev.exe" in source
 
 
 def test_backend_cli_disables_uvicorn_default_log_config(monkeypatch):
